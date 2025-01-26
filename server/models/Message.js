@@ -1,4 +1,4 @@
-// server/models/Message.js
+// models/Message.js
 
 const mongoose = require('mongoose');
 

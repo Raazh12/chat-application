@@ -1,18 +1,19 @@
-// server/middleware/authMiddleware.js
+// middleware/authMiddleware.js
 
 const jwt = require('jsonwebtoken');
 
 const authMiddleware = (req, res, next) => {
-    const token = req.header('Authorization');
-    if (!token) return res.status(403).json({ message: 'Access denied' });
+    console.log('Incoming Request Headers:', req.headers);
+    
+    const token = req.headers['authorization'];
+    if (!token) return res.status(403).send('Access denied.');
 
-    try {
-        const verified = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = verified;
+    // Split the token to remove 'Bearer ' prefix
+    jwt.verify(token.split(' ')[1], process.env.JWT_SECRET, (err, user) => {
+        if (err) return res.status(403).send('Invalid token.');
+        req.user = user;
         next();
-    } catch (error) {
-        res.status(400).json({ message: 'Invalid token' });
-    }
+    });
 };
 
 module.exports = authMiddleware;
